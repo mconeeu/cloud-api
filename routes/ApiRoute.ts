@@ -1,4 +1,5 @@
-import express, { Request, Response } from "express";
+import express, {Request, Response} from "express";
+
 export const apiRouter = express.Router();
 
 apiRouter.get('/', (req: Request, res: Response) => {
