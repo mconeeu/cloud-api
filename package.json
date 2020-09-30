@@ -1,0 +1,27 @@
+{
+  "name": "mcone-cloud-api",
+  "version": "1.0.0",
+  "description": "The mcone cloud rest-api",
+  "main": "index.js",
+  "scripts": {
+    "tsc": "tsc",
+    "dev": "ts-node-dev --respawn app.ts",
+    "prod": "tsc && node ./build/app.js"
+  },
+  "keywords": [],
+  "author": "Dominik Lippl",
+  "license": "ISC",
+  "dependencies": {
+    "@sentry/node": "^5.24.2",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.8",
+    "@types/jsonwebtoken": "^8.5.0",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "ts-node-dev": "^1.0.0-pre.63",
+    "typescript": "^4.0.3"
+  }
+}
