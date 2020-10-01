@@ -1,12 +1,20 @@
 import Sentry = require('@sentry/node');
 import express = require('express');
+import http = require('http');
+
+import {EventEmitter} from "events";
 
 // Services
-import {Service} from "./services/SentryService";
+import {SentryService} from "./services/SentryService";
+import {MongooseService} from "./services/MongooseService";
+
+import * as net from 'net'
 
 //Routes
 import {apiRouter} from "./routes/ApiRoute";
 import {authRouter} from "./routes/AuthRoute";
+import {Server, Socket} from "socket.io";
+import {OutgoingHttpHeaders} from "http";
 
 try {
     //read .env file
@@ -16,7 +24,11 @@ try {
     const app: express.Application = express();
 
     //initialize sentry logging
-    const sentry: Service.SentryService = new Service.SentryService();
+    const sentry: SentryService = new SentryService();
+
+    //connect to mongodb database
+    const database: MongooseService = new MongooseService();
+    database.connect();
 
     //register routers
     app.use('/api/v1', apiRouter);
@@ -25,6 +37,43 @@ try {
     app.listen(process.env.PORT, function () {
         console.log('cloud rest-api listening on port ' + process.env.PORT);
     });
+
+    const WebSocket = require('ws');
+    const wss = new WebSocket.Server({port: 3000});
+
+    let i: number;
+    wss.on('connection', function connection(ws: any) {
+        console.log("new connection")
+        ws.on('message', function incoming(message: any) {
+            console.log('Client: %s', message);
+            ws.send('Server: ' + i);
+            i++;
+        });
+
+        ws.send('hello');
+    });
+
+    // Normal Socket (Works with java)
+    // var i: number;
+    //
+    // const server = net.createServer((socket) => {
+    //     socket.on('data', (data) => {
+    //         console.log("Data: " + data.toString());
+    //         socket.write('Resend ' + i);
+    //         i++;
+    //     });
+    //
+    //     socket.on('pingServer', function (data) {
+    //          console.log("ping")
+    //         //console.log(data);
+    //         socket.emit('pingServer', data);
+    //     });
+    // })
+    //
+    // server.listen(3000, function () {
+    //     console.log(`Server listening for connection requests on socket localhost:3000`);
+    // });
+
 } catch (e) {
     Sentry.captureException(e);
 }
