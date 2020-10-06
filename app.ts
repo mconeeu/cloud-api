@@ -15,6 +15,9 @@ import {apiRouter} from "./routes/ApiRoute";
 import {authRouter} from "./routes/AuthRoute";
 import {Server, Socket} from "socket.io";
 import {OutgoingHttpHeaders} from "http";
+import {TCPServer} from "./services/TCPServer";
+
+export let server: TCPServer;
 
 try {
     //read .env file
@@ -38,42 +41,23 @@ try {
         console.log('cloud rest-api listening on port ' + process.env.PORT);
     });
 
-    const WebSocket = require('ws');
-    const wss = new WebSocket.Server({port: 3000});
-
-    let i: number;
-    wss.on('connection', function connection(ws: any) {
-        console.log("new connection")
-        ws.on('message', function incoming(message: any) {
-            console.log('Client: %s', message);
-            ws.send('Server: ' + i);
-            i++;
-        });
-
-        ws.send('hello');
-    });
-
-    // Normal Socket (Works with java)
-    // var i: number;
+    // const WebSocket = require('ws');
+    // const wss = new WebSocket.Server({port: 3000});
     //
-    // const server = net.createServer((socket) => {
-    //     socket.on('data', (data) => {
-    //         console.log("Data: " + data.toString());
-    //         socket.write('Resend ' + i);
+    // let i: number;
+    // wss.on('connection', function connection(ws: any) {
+    //     console.log("new connection")
+    //     ws.on('message', function incoming(message: any) {
+    //         console.log('Client: %s', message);
+    //         ws.send('Server: ' + i);
     //         i++;
     //     });
     //
-    //     socket.on('pingServer', function (data) {
-    //          console.log("ping")
-    //         //console.log(data);
-    //         socket.emit('pingServer', data);
-    //     });
-    // })
-    //
-    // server.listen(3000, function () {
-    //     console.log(`Server listening for connection requests on socket localhost:3000`);
+    //     ws.send('hello');
     // });
 
+    // Normal Socket (Works with java)
+    server = new TCPServer(3000);
 } catch (e) {
     Sentry.captureException(e);
 }
